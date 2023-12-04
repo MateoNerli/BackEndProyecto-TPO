@@ -104,7 +104,7 @@ def update_producto(id):
  
     producto.nombre=request.json['nombre']
     producto.precio=request.json['precio']
-    producto.stock=request.json['stock']
+    producto.descripcion=request.json['descripcion']
     producto.imagen=request.json['imagen']
 
 
