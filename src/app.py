@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 app=Flask(__name__)  # crear el objeto app de la clase Flask
 CORS(app) #modulo cors es para que me permita acceder desde el frontend al backend
-
+import hashlib
 
 # configuro la base de datos, con el nombre el usuario y la clave
 app.config['SQLALCHEMY_DATABASE_URI']='mysql+pymysql://root:0306@localhost/proyectotpo'
@@ -126,14 +126,13 @@ def get_user(id):
 
 @app.route('/users', methods=['POST']) # crea ruta o endpoint
 def create_user():
-    #print(request.json)  # request.json contiene el json que envio el cliente
     nombre=request.json['nombre']
     apellido=request.json['apellido']
     user=request.json['user']
     email=request.json['email']
     password=request.json['password']
-    role=request.json['role']
-    new_user=Users(nombre,apellido,user,email,password,role)
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    new_user=Users(nombre,apellido,user,email,hashed_password,1)
     db.session.add(new_user)
     db.session.commit()
 
