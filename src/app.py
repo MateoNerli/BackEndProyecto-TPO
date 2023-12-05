@@ -39,11 +39,13 @@ class Producto(db.Model):   # la clase Producto hereda de db.Model
     precio=db.Column(db.Integer)
     descripcion=db.Column(db.String(400))
     imagen=db.Column(db.String(400))
-    def __init__(self,nombre,precio,descripcion,imagen):   #crea el  constructor de la clase
+    tipo = db.Column(db.String(100))
+    def __init__(self,nombre,precio,descripcion,imagen,tipo):   #crea el  constructor de la clase
         self.nombre=nombre   # no hace falta el id porque lo crea sola mysql por ser auto_incremento
         self.precio=precio
         self.descripcion=descripcion
         self.imagen=imagen
+        self.tipo=tipo
 
 
 with app.app_context():
@@ -52,7 +54,7 @@ with app.app_context():
 
 class ProductoSchema(ma.Schema):
     class Meta:
-        fields=('id','nombre','precio','descripcion','imagen')
+        fields=('id','nombre','precio','descripcion','imagen','tipo')
 producto_schema=ProductoSchema()            # El objeto producto_schema es para traer un producto
 productos_schema=ProductoSchema(many=True)  # El objeto productos_schema es para traer multiples registros de producto
 
@@ -92,6 +94,7 @@ def create_producto():
     precio=request.json['precio']
     descripcion=request.json['descripcion']
     imagen=request.json['imagen']
+    tipo=request.json['tipo']
     new_producto=Producto(nombre,precio,descripcion,imagen)
     db.session.add(new_producto)
     db.session.commit() # confirma el alta
@@ -106,7 +109,7 @@ def update_producto(id):
     producto.precio=request.json['precio']
     producto.descripcion=request.json['descripcion']
     producto.imagen=request.json['imagen']
-
+    producto.tipo=request.json['tipo']
 
     db.session.commit()    # confirma el cambio
     return producto_schema.jsonify(producto)    # y retorna un json con el producto
@@ -159,7 +162,21 @@ def delete_user(id):
     db.session.commit()                     # confirma el delete
     return user_schema.jsonify(user)
 
+@app.route('/login', methods=['POST'])
+def login():
+    user=request.json['user']
+    password=request.json['password']
+    hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
+    found_user=Users.query.filter_by(user=user).first()
+
+    if found_user:
+        if found_user.password == hashed_password:
+            return "Inicio de sesión exitoso"
+        else:
+            return "Contraseña incorrecta"
+    else:
+        return "Usuario no encontrado"
 # programa principal *******************************
 if __name__=='__main__':  
     app.run(debug=True, port=5000)
