@@ -95,7 +95,7 @@ def create_producto():
     descripcion=request.json['descripcion']
     imagen=request.json['imagen']
     tipo=request.json['tipo']
-    new_producto=Producto(nombre,precio,descripcion,imagen)
+    new_producto=Producto(nombre,precio,descripcion,imagen,tipo)
     db.session.add(new_producto)
     db.session.commit() # confirma el alta
     return producto_schema.jsonify(new_producto)
