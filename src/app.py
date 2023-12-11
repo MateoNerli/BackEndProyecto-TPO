@@ -172,11 +172,12 @@ def login():
 
     if found_user:
         if found_user.password == hashed_password:
-            return "Inicio de sesión exitoso"
+            return jsonify({ 'status': 'Inicio de sesión exitoso', 'user': user, 'role': found_user.role })
         else:
             return "Contraseña incorrecta"
     else:
         return "Usuario no encontrado"
+    
 # programa principal *******************************
 if __name__=='__main__':  
     app.run(debug=True, port=5000)
